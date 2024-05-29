@@ -1,14 +1,16 @@
+import java.time.LocalTime;
+
 class SubCarro extends Carro{
-    private long horarioEntrada;
+    private LocalTime horarioEntrada;
     private int numeroDeManobras;
 
-    public SubCarro(String placa, long horarioEntrada){
+    public SubCarro(String placa, LocalTime horarioEntrada){
         super(placa);
         this.horarioEntrada = horarioEntrada;
         this.numeroDeManobras = 0;
     }
 
-    public long getHorarioEntrada() {
+    public LocalTime getHorarioEntrada() {
         return horarioEntrada;
     }
 

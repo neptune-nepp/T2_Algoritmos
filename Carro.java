@@ -9,4 +9,8 @@ public class Carro {
         return placa;
     }
 
+    @Override
+    public String toString() {
+        return placa;
+    }
 }

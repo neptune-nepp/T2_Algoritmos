@@ -1,62 +1,69 @@
-import java.util.Date;
+import java.util.Scanner;
+
 
 public class Estacionamento {
     private Fila<SubCarro> filaCarros;
     private int capacidadeMaxima;
+    Scanner sc = new Scanner(System.in);
 
-    public Estacionamento(int capacidadeMaxima){
+    public void Estaciona(int capacidadeMaxima){
         this.capacidadeMaxima = capacidadeMaxima;
         this.filaCarros = new Fila<>(capacidadeMaxima);
     }
 
-    public boolean entradaCarro(String placa){
+    //pronto
+    public boolean entradaCarro(SubCarro carro){
         if(filaCarros.estaCheia()){
             System.out.println("Estacionamento lotado. Nao é possível adicionar mais carros.");
             return false;
         }
-        long horarioEntrada = System.currentTimeMillis();
-        SubCarro novoCarro = new SubCarro(placa, horarioEntrada);
-        filaCarros.enfileira(novoCarro);
-        System.out.println("Carro com placa " +placa+ " entrou no estacionamento.");
+        filaCarros.enfileira(carro);
+        System.out.println("Carro com placa " + carro.getPlaca() + " entrou no estacionamento.");
         return true;
     }
 
-    public boolean saidaCarro(){
+    public SubCarro saidaCarro(String placa){
+        SubCarro carro = null;
         if (filaCarros.estaVazia()){
             System.out.println("Nenhum carro no estacionamento para sair.");
-            return false;
+            return null;
         }
-        SubCarro carroASair = filaCarros.desenfileira();
-        long horarioSaida = System.currentTimeMillis();
-        long tempoPermanencia = horarioSaida - carroASair.getHorarioEntrada();
-        System.out.println("Carro com placa " +carroASair.getPlaca()+ " saiu do estacionamento.");
-        System.out.println("Tempo de permanencia: " +tempoPermanencia/1000+ " segundos.");
-        System.out.println("Numero de manobras: " +carroASair.getNumeroDeManobras());
-        return true;
-    }
 
-    public void consultarCarro(String placa){
+        Fila<SubCarro> aux = new Fila<SubCarro>();
         boolean encontrouCarro = false;
-        for (int i = 0; i < filaCarros.getTamanho(); i++){
-            SubCarro carro = filaCarros.espiar(i);
-            if (carro.getPlaca() == placa){
-                System.out.println("Carro com placa " +placa+ " esta na posicao " +(i + 1)+ " da fila.");
-                System.out.println("Horario de entrada: " + new Date(carro.getHorarioEntrada()));
+
+        while (!encontrouCarro && !filaCarros.estaVazia()){
+            carro = filaCarros.desenfileira();
+            if(carro.getPlaca().equals(placa)) {
+                carro.incrementarManobras();
                 encontrouCarro = true;
-                break;
+            } else{
+                carro.incrementarManobras();
+                aux.enfileira(carro);
             }
         }
-
-        if (!encontrouCarro){
-            System.out.println("Carro com placa " + placa + " nao encontrado no estacionamento. ");
-        }
+        while(!aux.estaVazia()){
+            filaCarros.enfileira(aux.desenfileira());
+        } 
+        return carro;
     }
 
-    public void estadoAtual(){
-        System.out.println("Estado atual do estacionamento:");
-        for(int i = 0; i < filaCarros.getTamanho(); i++){
+    public boolean consultarCarro(String placa){
+        boolean encontrouCarro = false;
+        
+        for (int i = 0; i < filaCarros.getTamanho(); i++){
             SubCarro carro = filaCarros.espiar(i);
-            System.out.println("Posicao " + (i+1) + " | Placa: " + carro.getPlaca() + " | Horario de entrada: " + new Date(carro.getHorarioEntrada()) + " | Numero de manobras: " +carro.getNumeroDeManobras());
-        }
+            
+            if (carro.getPlaca().equals(placa)){
+                System.out.println(carro.getPlaca());
+                encontrouCarro = true;
+                return encontrouCarro;
+            }
+        } return encontrouCarro;
     }
+
+    public String estadoAtual(){
+        return filaCarros.toStringVetor();
+    }
+
 }
